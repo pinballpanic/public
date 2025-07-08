@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Idade</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+        }
+        input[type="date"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #resultado {
+            margin-top: 25px;
+            font-size: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+        #resultado.error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Idade</h1>
+        <label for="dataNascimento">Sua Data de Nascimento:</label>
+        <input type="date" id="dataNascimento">
+        <button onclick="calcularIdade()">Calcular Idade</button>
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        function calcularIdade() {
+            const inputDataNascimento = document.getElementById('dataNascimento').value;
+            const resultadoDiv = document.getElementById('resultado');
+
+            // Verifica se uma data foi inserida
+            if (!inputDataNascimento) {
+                resultadoDiv.textContent = "Por favor, insira uma data de nascimento.";
+                resultadoDiv.className = "error"; // Adiciona classe para erro
+                return;
+            }
+
+            const dataNascimento = new Date(inputDataNascimento + 'T00:00:00'); // Adiciona T00:00:00 para evitar problemas de fuso horário
+            const hoje = new Date();
+
+            let anos = hoje.getFullYear() - dataNascimento.getFullYear();
+            let meses = hoje.getMonth() - dataNascimento.getMonth();
+
+            // Ajusta os anos e meses se o aniversário ainda não ocorreu este ano
+            if (meses < 0 || (meses === 0 && hoje.getDate() < dataNascimento.getDate())) {
+                anos--;
+                meses += 12; // Adiciona 12 meses para compensar o ano decrementado
+            }
+
+            // Se a data de nascimento for no futuro
+            if (anos < 0 || (anos === 0 && meses < 0)) {
+                resultadoDiv.textContent = "A data de nascimento não pode ser no futuro!";
+                resultadoDiv.className = "error";
+                return;
+            }
+
+            resultadoDiv.textContent = `Voce tem ${anos} anos e ${meses} meses.`;
+            resultadoDiv.className = ""; // Limpa a classe de erro se o cálculo for bem-sucedido
+        }
+    </script>
+</body>
+</html>
