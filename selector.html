@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seletor de Configuração</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0D0F14;
+      --panel:     #151820;
+      --surface:   #1E2130;
+      --border:    #2A2D3E;
+      --text:      #E8EAF0;
+      --muted:     #6B7280;
+      --btn-idle:  #252838;
+      --btn-hover: #2E324A;
+
+      --blue:      #2563EB;
+      --blue-glow: #2563eb44;
+      --blue-text: #93C5FD;
+
+      --yellow:    #D97706;
+      --yellow-glow: #D9770644;
+      --yellow-text: #FCD34D;
+
+      --red:       #DC2626;
+      --red-glow:  #DC262644;
+      --red-text:  #FCA5A5;
+
+      --neutral:   #374151;
+      --neutral-glow: #37415133;
+      --neutral-text: #9CA3AF;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 48px;
+      gap: 28px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+    }
+    header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── RESULT PANEL ── */
+    #result-panel {
+      width: 100%;
+      max-width: 720px;
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #result-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    #result-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.35s ease;
+    }
+
+    #result-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--neutral-text);
+      transition: color 0.35s ease;
+      text-align: center;
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+    }
+
+    /* color states */
+    #result-panel.state-neutral {
+      border-color: var(--border);
+      box-shadow: none;
+    }
+    #result-panel.state-blue {
+      border-color: var(--blue);
+      box-shadow: 0 0 32px var(--blue-glow), 0 0 4px var(--blue-glow);
+      background: #111827;
+    }
+    #result-panel.state-blue #result-text  { color: var(--blue-text); }
+    #result-panel.state-blue #result-label { color: var(--blue); }
+
+    #result-panel.state-yellow {
+      border-color: var(--yellow);
+      box-shadow: 0 0 32px var(--yellow-glow), 0 0 4px var(--yellow-glow);
+      background: #111210;
+    }
+    #result-panel.state-yellow #result-text  { color: var(--yellow-text); }
+    #result-panel.state-yellow #result-label { color: var(--yellow); }
+
+    #result-panel.state-red {
+      border-color: var(--red);
+      box-shadow: 0 0 32px var(--red-glow), 0 0 4px var(--red-glow);
+      background: #130F0F;
+    }
+    #result-panel.state-red #result-text  { color: var(--red-text); }
+    #result-panel.state-red #result-label { color: var(--red); }
+
+    /* ── GROUPS CONTAINER ── */
+    #groups {
+      width: 100%;
+      max-width: 720px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* ── GROUP CARD ── */
+    .group-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .group-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .group-badge {
+      display: inline-block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-right: 6px;
+    }
+
+    /* ── SET (TREND / REGION) ── */
+    .btn-set {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .set-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── TOGGLE BUTTON ── */
+    .tog-btn {
+      flex: 1;
+      padding: 10px 8px;
+      background: var(--btn-idle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.1s;
+      user-select: none;
+    }
+    .tog-btn:hover:not(.active) {
+      background: var(--btn-hover);
+      border-color: #3B4260;
+      color: var(--text);
+    }
+    .tog-btn:active { transform: scale(0.96); }
+
+    .tog-btn.active {
+      background: #1E2A4A;
+      border-color: var(--blue);
+      color: #93C5FD;
+      box-shadow: 0 0 10px #2563eb33;
+    }
+
+    /* ── DIVIDER BETWEEN GROUPS ── */
+    .group-divider {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+      display: none; /* handled by grid gap */
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 520px) {
+      body { padding: 20px 12px 40px; gap: 20px; }
+      #groups { grid-template-columns: 1fr; gap: 14px; }
+      #result-panel { padding: 20px 20px; }
+      .group-card { padding: 18px 16px 16px; gap: 16px; }
+    }
+
+    @media (max-width: 360px) {
+      .tog-btn { font-size: 0.8rem; padding: 9px 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1><span style="color:var(--text)">Config</span> Selector</h1>
+  </header>
+
+  <!-- RESULT DISPLAY -->
+  <div id="result-panel" class="state-neutral">
+    <span id="result-label">Configuração Selecionada</span>
+    <span id="result-text">—</span>
+  </div>
+
+  <!-- GROUPS -->
+  <div id="groups">
+
+    <!-- GROUP 50 -->
+    <div class="group-card">
+      <div class="group-title"><span class="group-badge">50</span></div>
+
+      <!-- TREND -->
+      <div class="btn-set">
+        <span class="set-label">Trend</span>
+        <div class="btn-row">
+          <button class="tog-btn" data-group="50" data-set="trend" data-val="TT">TT</button>
+          <button class="tog-btn" data-group="50" data-set="trend" data-val="CT">CT</button>
+        </div>
+      </div>
+
+      <!-- REGION -->
+      <div class="btn-set">
+        <span class="set-label">Region</span>
+        <div class="btn-row">
+          <button class="tog-btn" data-group="50" data-set="region" data-val="L1">L1</button>
+          <button class="tog-btn" data-group="50" data-set="region" data-val="L5">L5</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUP 10 -->
+    <div class="group-card">
+      <div class="group-title"><span class="group-badge">10</span></div>
+
+      <!-- TREND -->
+      <div class="btn-set">
+        <span class="set-label">Trend</span>
+        <div class="btn-row">
+          <button class="tog-btn" data-group="10" data-set="trend" data-val="TT">TT</button>
+          <button class="tog-btn" data-group="10" data-set="trend" data-val="CT">CT</button>
+        </div>
+      </div>
+
+      <!-- REGION -->
+      <div class="btn-set">
+        <span class="set-label">Region</span>
+        <div class="btn-row">
+          <button class="tog-btn" data-group="10" data-set="region" data-val="L1">L1</button>
+          <button class="tog-btn" data-group="10" data-set="region" data-val="L5">L5</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #groups -->
+
+  <script>
+    // ── State ──────────────────────────────────────────────
+    const state = {
+      '50': { trend: null, region: null },
+      '10': { trend: null, region: null }
+    };
+
+    // ── Color rules ────────────────────────────────────────
+    // Key format: "50_TREND/REGION__10_TREND/REGION"
+    function getColor(s50t, s50r, s10t, s10r) {
+      const key = `${s50t}/${s50r}__${s10t}/${s10r}`;
+      const rules = {
+        // AZUL
+        'TT/L1__TT/L1': 'blue',
+        'TT/L1__CT/L5': 'blue',
+        // AMARELO
+        'CT/L5__CT/L5': 'yellow',
+        'TT/L1__CT/L1': 'yellow',
+        'TT/L5__TT/L1': 'yellow',
+        'CT/L5__TT/L1': 'yellow',
+        // VERMELHO
+        'CT/L1__CT/L1': 'red',
+        'CT/L5__CT/L1': 'red',
+        'TT/L1__TT/L5': 'red',
+        'TT/L5__TT/L5': 'red',
+      };
+      return rules[key] || null;
+    }
+
+    // ── Update UI ──────────────────────────────────────────
+    function update() {
+      const { trend: t50, region: r50 } = state['50'];
+      const { trend: t10, region: r10 } = state['10'];
+
+      const panel     = document.getElementById('result-panel');
+      const resultTxt = document.getElementById('result-text');
+
+      // Both groups fully selected?
+      if (t50 && r50 && t10 && r10) {
+        const label = `50(${t50}/${r50}) 10(${t10}/${r10})`;
+        resultTxt.textContent = label;
+
+        const color = getColor(t50, r50, t10, r10);
+        panel.className = 'state-' + (color || 'neutral');
+      } else {
+        // Partial selection feedback
+        const part50 = (t50 && r50) ? `50(${t50}/${r50})` : (t50 || r50) ? `50(${t50 || '?'}/${r50 || '?'})` : '50(—)';
+        const part10 = (t10 && r10) ? `10(${t10}/${r10})` : (t10 || r10) ? `10(${t10 || '?'}/${r10 || '?'})` : '10(—)';
+        resultTxt.textContent = `${part50} ${part10}`;
+        panel.className = 'state-neutral';
+      }
+    }
+
+    // ── Button click handler ───────────────────────────────
+    document.querySelectorAll('.tog-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.dataset.group;
+        const set   = btn.dataset.set;
+        const val   = btn.dataset.val;
+
+        // Deselect sibling in same group+set
+        document.querySelectorAll(`.tog-btn[data-group="${group}"][data-set="${set}"]`)
+          .forEach(b => b.classList.remove('active'));
+
+        // Select this one
+        btn.classList.add('active');
+        state[group][set] = val;
+
+        update();
+      });
+    });
+
+    // Initial render
+    update();
+  </script>
+</body>
+</html>
